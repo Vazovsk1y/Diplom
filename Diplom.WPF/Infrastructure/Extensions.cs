@@ -1,4 +1,5 @@
-﻿using Diplom.WPF.ViewModels;
+﻿using Diplom.WPF.Models;
+using Diplom.WPF.ViewModels;
 using FluentValidation.Results;
 using System.ComponentModel;
 using System.Reflection;
@@ -18,5 +19,24 @@ public static class Extensions
         DescriptionAttribute attribute = field.GetCustomAttribute<DescriptionAttribute>();
 
         return new EnumValue(attribute == null ? value.ToString() : attribute.Description, value);
+    }
+
+    public static PlaneViewModel ToViewModel(this Plane plane)
+    {
+        var result = new PlaneViewModel
+        {
+            Id = plane.Id,
+            FuelCapacity = plane.FuelCapacity,
+            FuelConsumption = plane.FuelConsumption,
+            Manufacturer = plane.Manufacturer,
+            MaxSpeed = plane.MaxSpeed,
+            Model = plane.Model,
+            PassengersCapacity = plane.PassengersCapacity,
+            Range = plane.PassengersCapacity,
+            RegistrationNumber = plane.RegistrationNumber,
+            Type = plane.Type.ToEnumValue()
+        };
+
+        return result;
     }
 }

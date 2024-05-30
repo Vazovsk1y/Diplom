@@ -20,6 +20,7 @@ public static class Registrator
         collection.AddSingleton<IUserDialogService, UserDialogService>();
         collection.AddWindowWithViewModelTransient<LoginWindow, LoginViewModel>();
         collection.AddWindowWithViewModelSingleton<MainWindow, MainWindowViewModel>();
+        collection.AddWindowWithViewModelTransient<PlaneAddWindow, PlaneAddViewModel>();
 
         collection.AddSingleton<PlanesPanelViewModel>();
 

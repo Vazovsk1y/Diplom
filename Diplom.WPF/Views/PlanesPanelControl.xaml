@@ -31,6 +31,9 @@
             ItemsSource="{Binding Planes}"
             SelectedItem="{Binding SelectedPlane}"
             SelectionMode="Single">
+            <DataGrid.Resources>
+                <CollectionViewSource x:Key="AvailablePlaneTypes" Source="{Binding PlaneTypes}"/>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding RegistrationNumber}" Header="Регистрационный номер" />
                 <DataGridTextColumn Binding="{Binding Manufacturer}" Header="Производитель" />
@@ -40,6 +43,9 @@
                 <DataGridTextColumn Binding="{Binding MaxSpeed}" Header="Максимальная скорость, км/ч" />
                 <DataGridTextColumn Binding="{Binding FuelCapacity}" Header="Объем бака, л." />
                 <DataGridTextColumn Binding="{Binding FuelConsumption}" Header="Расход, л/100км" />
+                <DataGridComboBoxColumn SelectedItemBinding="{Binding Type}" ItemsSource="{Binding Source={StaticResource AvailablePlaneTypes}}"
+                                        DisplayMemberPath="Description"
+                                        Header="Тип"/>
                 <DataGridTextColumn
                     Width="20"
                     Binding="{Binding UpdatableSign.Value}"
@@ -50,7 +56,7 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button
                 Margin="0,5,0,0"
-                Command="{Binding AddCommand}"
+                Command="{Binding AddPlaneCommand}"
                 Content="Добавить" />
             <Button
                 Margin="5,5,0,0"

@@ -58,14 +58,11 @@ public enum PlaneType
     [Description("Грузовой")]
     Cargo,
 
-    [Description("Частный реактивный самолет")]
+    [Description("Частный самолет")]
     PrivateJet,
 
     [Description("Военный")]
     Military,
-
-    [Description("Вертолет")]
-    Helicopter,
 
     [Description("Планер")]
     Glider

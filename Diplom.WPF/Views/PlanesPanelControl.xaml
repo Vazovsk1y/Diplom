@@ -1,0 +1,71 @@
+﻿<UserControl
+    x:Class="Diplom.WPF.Views.PlanesPanelControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Diplom.WPF.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:Diplom.WPF.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:PlanesPanelViewModel}"
+    d:DesignHeight="400"
+    d:DesignWidth="1000"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style TargetType="Button">
+            <Setter Property="MinWidth" Value="100" />
+            <Setter Property="MinHeight" Value="35" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <DataGrid
+            HorizontalAlignment="Left"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            FontSize="14"
+            ItemsSource="{Binding Planes}"
+            SelectedItem="{Binding SelectedPlane}"
+            SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding RegistrationNumber}" Header="Регистрационный номер" />
+                <DataGridTextColumn Binding="{Binding Manufacturer}" Header="Производитель" />
+                <DataGridTextColumn Binding="{Binding Model}" Header="Модель" />
+                <DataGridTextColumn Binding="{Binding PassengersCapacity}" Header="Вместимость(пассажиры)" />
+                <DataGridTextColumn Binding="{Binding Range}" Header="Макс. дистанция полета, км" />
+                <DataGridTextColumn Binding="{Binding MaxSpeed}" Header="Максимальная скорость, км/ч" />
+                <DataGridTextColumn Binding="{Binding FuelCapacity}" Header="Объем бака, л." />
+                <DataGridTextColumn Binding="{Binding FuelConsumption}" Header="Расход, л/100км" />
+                <DataGridTextColumn
+                    Width="20"
+                    Binding="{Binding UpdatableSign.Value}"
+                    IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button
+                Margin="0,5,0,0"
+                Command="{Binding AddCommand}"
+                Content="Добавить" />
+            <Button
+                Margin="5,5,0,0"
+                Command="{Binding DeleteCommand}"
+                Content="Удалить" />
+            <Button
+                MinWidth="180"
+                Margin="5,5,0,0"
+                Command="{Binding SaveChangesCommand}"
+                Content="Сохранить изменения" />
+            <Button
+                MinWidth="180"
+                Margin="5,5,0,0"
+                Command="{Binding RollbackChangesCommand}"
+                Content="Отменить изменения" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -21,8 +21,10 @@ public static class Registrator
         collection.AddWindowWithViewModelTransient<LoginWindow, LoginViewModel>();
         collection.AddWindowWithViewModelSingleton<MainWindow, MainWindowViewModel>();
         collection.AddWindowWithViewModelTransient<PlaneAddWindow, PlaneAddViewModel>();
+        collection.AddWindowWithViewModelTransient<CrewMemberAddWindow, CrewMemberAddViewModel>();
 
         collection.AddSingleton<PlanesPanelViewModel>();
+        collection.AddSingleton<CrewMembersPanelViewModel>();
 
         collection.AddDbContext<DiplomDbContext>(e =>
         {

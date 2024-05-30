@@ -21,6 +21,19 @@ public static class Extensions
         return new EnumValue(attribute == null ? value.ToString() : attribute.Description, value);
     }
 
+    public static CrewMemberViewModel ToViewModel(this CrewMember crewMember)
+    {
+        var result = new CrewMemberViewModel()
+        {
+            Id = crewMember.Id,
+            FullName = crewMember.FullName,
+            Type = crewMember.Type.ToEnumValue(),
+        };
+
+        result.SaveState();
+        return result;
+    }
+
     public static PlaneViewModel ToViewModel(this Plane plane)
     {
         var result = new PlaneViewModel

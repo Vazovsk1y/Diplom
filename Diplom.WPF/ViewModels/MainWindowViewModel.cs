@@ -9,9 +9,10 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private IComboBoxItem? _selectedItem;
 
-    public MainWindowViewModel(PlanesPanelViewModel planesPanelViewModel)
+    public MainWindowViewModel(PlanesPanelViewModel planesPanelViewModel, CrewMembersPanelViewModel crewMembersPanelViewModel)
     {
         ComboBoxItems.Add(planesPanelViewModel);
+        ComboBoxItems.Add(crewMembersPanelViewModel);
         ActivateComboBoxItems();
         SelectedItem = ComboBoxItems.FirstOrDefault();
     }

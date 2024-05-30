@@ -19,6 +19,8 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DeletePlaneCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RollbackChangesCommand))]
+    [NotifyCanExecuteChangedFor(nameof(UpdatePlaneCommand))]
     private PlaneViewModel? _selectedPlane;
 
     public string Title => "Самолеты";
@@ -34,19 +36,7 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
             .Planes
             .OrderBy(e => e.Manufacturer)
             .ThenBy(e => e.Model)
-            .Select(e => new PlaneViewModel
-            {
-                Id = e.Id,
-                FuelCapacity = e.FuelCapacity,
-                FuelConsumption = e.FuelConsumption,
-                Manufacturer= e.Manufacturer,
-                MaxSpeed = e.MaxSpeed,
-                Model = e.Model,
-                PassengersCapacity = e.PassengersCapacity,
-                Range = e.PassengersCapacity,
-                RegistrationNumber = e.RegistrationNumber,
-                Type = e.Type.ToEnumValue()
-            })
+            .Select(e => e.ToViewModel())
             .ToList();
 
         foreach (var item in Enum.GetValues<PlaneType>().Select(e => e.ToEnumValue()))
@@ -68,7 +58,7 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
         dialogService.ShowDialog<PlaneAddWindow>();
     }
 
-    [RelayCommand(CanExecute = nameof(CanDelete))]
+    [RelayCommand(CanExecute = nameof(CanDeleteOrRollbackChangesOrUpdate))]
     private async Task DeletePlane()
     {
         if (DeletePlaneCommand.IsRunning)
@@ -93,7 +83,62 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
         }
     }
 
-    private bool CanDelete() => SelectedPlane is not null;
+    private bool CanDeleteOrRollbackChangesOrUpdate() => SelectedPlane is not null;
+
+
+    [RelayCommand(CanExecute = nameof(CanDeleteOrRollbackChangesOrUpdate))]
+    private void RollbackChanges()
+    {
+        if (!SelectedPlane!.IsModified())
+        {
+            return;
+        }
+        SelectedPlane.RollBackChanges();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDeleteOrRollbackChangesOrUpdate))]
+    private async Task UpdatePlane()
+    {
+        if (UpdatePlaneCommand.IsRunning)
+        {
+            return;
+        }
+
+        if (!SelectedPlane!.IsModified())
+        {
+            return;
+        }
+
+        using var scope = App.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<DiplomDbContext>();
+        var plane = dbContext.Planes.First(e => e.Id == SelectedPlane!.Id);
+
+        plane.FuelCapacity = SelectedPlane!.FuelCapacity;
+        plane.FuelConsumption = SelectedPlane.FuelConsumption;
+        plane.Manufacturer = SelectedPlane.Manufacturer.Trim();
+        plane.MaxSpeed = SelectedPlane.MaxSpeed;
+        plane.Model = SelectedPlane.Model.Trim();
+        plane.PassengersCapacity = SelectedPlane.PassengersCapacity;
+        plane.Range = SelectedPlane.Range;
+        plane.RegistrationNumber = SelectedPlane.RegistrationNumber.Trim();
+        plane.Type = Enum.Parse<PlaneType>(SelectedPlane.Type.Value.ToString());
+
+        if (await dbContext.Planes.AnyAsync(e => e.Id != plane.Id && e.RegistrationNumber == plane.RegistrationNumber))
+        {
+            MessageBoxHelper.ShowErrorBox("Необходимо обеспечить уникальность регистрационного номера.");
+            return;
+        }
+
+        var validationResult = Validate(plane);
+        if (!validationResult.IsValid)
+        {
+            MessageBoxHelper.ShowErrorBox(validationResult.ToDisplayRow());
+            return;
+        }
+
+        await dbContext.SaveChangesAsync();
+        SelectedPlane.SaveState();
+    }
 
     public void Receive(PlaneAddedMessage message)
     {

@@ -48,7 +48,7 @@
                                         Header="Тип"/>
                 <DataGridTextColumn
                     Width="20"
-                    Binding="{Binding UpdatableSign.Value}"
+                    Binding="{Binding UpdatableSign}"
                     IsReadOnly="True" />
             </DataGrid.Columns>
         </DataGrid>
@@ -65,7 +65,7 @@
             <Button
                 MinWidth="180"
                 Margin="5,5,0,0"
-                Command="{Binding SaveChangesCommand}"
+                Command="{Binding UpdatePlaneCommand}"
                 Content="Сохранить изменения" />
             <Button
                 MinWidth="180"

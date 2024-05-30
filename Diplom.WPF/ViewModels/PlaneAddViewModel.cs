@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Diplom.WPF.Data;
 using Diplom.WPF.Infrastructure;
 using Diplom.WPF.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 
@@ -80,6 +81,12 @@ public partial class PlaneAddViewModel : DialogViewModel
         if (!validationResult.IsValid)
         {
             MessageBoxHelper.ShowErrorBox(validationResult.ToDisplayRow());
+            return;
+        }
+
+        if (await dbContext.Planes.AnyAsync(e => e.RegistrationNumber == plane.RegistrationNumber))
+        {
+            MessageBoxHelper.ShowErrorBox("Необходимо обеспечить уникальность регистрационного номера.");
             return;
         }
 

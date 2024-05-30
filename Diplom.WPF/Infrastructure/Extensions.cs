@@ -37,6 +37,7 @@ public static class Extensions
             Type = plane.Type.ToEnumValue()
         };
 
+        result.SaveState();
         return result;
     }
 }

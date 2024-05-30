@@ -5,6 +5,7 @@ using Diplom.WPF.Data;
 using Diplom.WPF.Infrastructure;
 using Diplom.WPF.Models;
 using Diplom.WPF.Views;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 
@@ -17,6 +18,7 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
     public ObservableCollection<EnumValue> PlaneTypes { get; } = [];
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DeletePlaneCommand))]
     private PlaneViewModel? _selectedPlane;
 
     public string Title => "Самолеты";
@@ -65,6 +67,33 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
         var dialogService = scope.ServiceProvider.GetRequiredService<IUserDialogService>();
         dialogService.ShowDialog<PlaneAddWindow>();
     }
+
+    [RelayCommand(CanExecute = nameof(CanDelete))]
+    private async Task DeletePlane()
+    {
+        if (DeletePlaneCommand.IsRunning)
+        {
+            return;
+        }
+
+        var dialogResult = MessageBoxHelper.ShowDialogBoxYesNo("Вы уверены, что желаете удалить выбранную запись?");
+        if (dialogResult == System.Windows.MessageBoxResult.No)
+        {
+            return;
+        }
+
+        using var scope = App.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<DiplomDbContext>();
+        var item = await dbContext.Planes.FirstOrDefaultAsync(e => e.Id == SelectedPlane!.Id);
+        if (item is not null)
+        {
+            Planes.Remove(SelectedPlane!);
+            dbContext.Planes.Remove(item);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    private bool CanDelete() => SelectedPlane is not null;
 
     public void Receive(PlaneAddedMessage message)
     {

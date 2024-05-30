@@ -60,7 +60,7 @@
                 Content="Добавить" />
             <Button
                 Margin="5,5,0,0"
-                Command="{Binding DeleteCommand}"
+                Command="{Binding DeletePlaneCommand}"
                 Content="Удалить" />
             <Button
                 MinWidth="180"

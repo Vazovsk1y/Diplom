@@ -17,6 +17,6 @@ public enum FlightNoteTypes
 {
     [Description("Заметка")]
     Note,
-    [Description("Индцидент")]
+    [Description("Инцидент")]
     Accident
 }

@@ -79,6 +79,9 @@ namespace Diplom.WPF.Migrations
                     b.Property<Guid>("PlaneId")
                         .HasColumnType("uuid");
 
+                    b.Property<double>("Range")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");

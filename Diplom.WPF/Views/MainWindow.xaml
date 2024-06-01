@@ -37,6 +37,9 @@
                 <DataTemplate DataType="{x:Type viewmodels:CrewMembersPanelViewModel}">
                     <views:CrewMembersPanelControl DataContext="{Binding}" />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:FlightsPanelViewModel}">
+                    <views:FlightsPanelControl DataContext="{Binding}" />
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
     </Grid>

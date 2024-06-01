@@ -1,0 +1,56 @@
+﻿<Window
+    x:Class="Diplom.WPF.Views.FlightNoteAddWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Diplom.WPF.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:Diplom.WPF.ViewModels"
+    Title="Добавление заметки о рейсе"
+    Width="430"
+    Height="400"
+    d:DataContext="{d:DesignInstance Type=viewmodels:FlightNoteAddViewModel}"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <Label Content="Заголовок:" />
+            <TextBox Margin="5" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="Описание:" />
+            <TextBox
+                MinHeight="80"
+                Margin="5"
+                TextWrapping="Wrap"
+                Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="Тип:" />
+            <ComboBox
+                Height="20"
+                Margin="5,0,5,0"
+                DisplayMemberPath="Description"
+                ItemsSource="{Binding NoteTypes}"
+                SelectedItem="{Binding Type}" />
+        </StackPanel>
+        <StackPanel
+            Grid.Row="1"
+            Margin="0,20,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Orientation="Horizontal">
+            <Button
+                Width="80"
+                Margin="5"
+                Command="{Binding AcceptCommand}"
+                Content="ОК" />
+            <Button
+                Width="80"
+                Margin="5"
+                Command="{Binding CancelCommand}"
+                Content="Отмена" />
+        </StackPanel>
+    </Grid>
+</Window>

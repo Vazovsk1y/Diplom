@@ -22,7 +22,12 @@ public static class Registrator
         collection.AddWindowWithViewModelSingleton<MainWindow, MainWindowViewModel>();
         collection.AddWindowWithViewModelTransient<PlaneAddWindow, PlaneAddViewModel>();
         collection.AddWindowWithViewModelTransient<CrewMemberAddWindow, CrewMemberAddViewModel>();
+        collection.AddWindowWithViewModelTransient<FlightAddWindow, FlightAddViewModel>();
 
+        collection.AddTransient<FlightNoteAddWindow>();
+        collection.AddTransient<FlightNoteAddViewModel>();
+
+        collection.AddSingleton<FlightsPanelViewModel>();
         collection.AddSingleton<PlanesPanelViewModel>();
         collection.AddSingleton<CrewMembersPanelViewModel>();
 

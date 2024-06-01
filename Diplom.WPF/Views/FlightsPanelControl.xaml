@@ -1,0 +1,129 @@
+﻿<UserControl
+    x:Class="Diplom.WPF.Views.FlightsPanelControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Diplom.WPF.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:Diplom.WPF.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:FlightsPanelViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style TargetType="Button">
+            <Setter Property="MinWidth" Value="100" />
+            <Setter Property="MinHeight" Value="35" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <DataGrid
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                FontSize="14"
+                ItemsSource="{Binding Flights}"
+                SelectedItem="{Binding SelectedFlight}"
+                SelectionMode="Single">
+                <DataGrid.Resources>
+                    <CollectionViewSource x:Key="AvailableStatuses" Source="{Binding Statuses}" />
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Number}" Header="Номер рейса" />
+                    <DataGridTextColumn Binding="{Binding DepartureDate}" Header="Дата вылета" />
+                    <DataGridTextColumn Binding="{Binding DepartureTime}" Header="Время вылета" />
+                    <DataGridTextColumn Binding="{Binding ArrivalDate}" Header="Дата прибытия" />
+                    <DataGridTextColumn Binding="{Binding ArrivalTime}" Header="Время прибытия" />
+                    <DataGridTextColumn Binding="{Binding From}" Header="Откуда" />
+                    <DataGridTextColumn Binding="{Binding To}" Header="Куда" />
+                    <DataGridComboBoxColumn
+                        DisplayMemberPath="Description"
+                        Header="Статус"
+                        ItemsSource="{Binding Source={StaticResource AvailableStatuses}}"
+                        SelectedItemBinding="{Binding Status}" />
+                    <DataGridTextColumn
+                        Binding="{Binding Plane.RegistrationNumber}"
+                        Header="Самолет"
+                        IsReadOnly="True" />
+                    <DataGridTemplateColumn Header="Бортовой состав">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ItemsControl ItemsSource="{Binding CrewMembers}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding FullNameAndPost}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn
+                        Width="20"
+                        Binding="{Binding UpdatableSign}"
+                        IsReadOnly="True" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <StackPanel Grid.Column="1" Margin="5, 0, 5, 0">
+                <ItemsControl
+                    MaxWidth="200"
+                    ItemsSource="{Binding SelectedFlight.FlightNotes}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Expander Header="{Binding Type}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Название:" />
+                                        <TextBlock Margin="10,0,0,0" Text="{Binding Title}" />
+                                    </StackPanel>
+                                    <TextBlock Text="Детально:" />
+                                    <TextBox IsReadOnly="True" TextWrapping="Wrap" TextAlignment="Justify" Text="{Binding Description}" />
+                                </StackPanel>
+                            </Expander>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Background="Transparent" Command="{Binding AddNoteCommand}">
+                    <TextBlock Text="+Новая заметка" TextDecorations="Underline" />
+                </Button>
+
+            </StackPanel>
+
+
+        </Grid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button
+                Margin="0,5,0,0"
+                Command="{Binding AddFlightCommand}"
+                Content="Добавить" />
+            <Button
+                Margin="5,5,0,0"
+                Command="{Binding DeleteFlightCommand}"
+                Content="Удалить" />
+            <Button
+                MinWidth="180"
+                Margin="5,5,0,0"
+                Command="{Binding UpdateFlightCommand}"
+                Content="Сохранить изменения" />
+            <Button
+                MinWidth="180"
+                Margin="5,5,0,0"
+                Command="{Binding RollbackChangesCommand}"
+                Content="Отменить изменения" />
+        </StackPanel>
+    </Grid>
+</UserControl>

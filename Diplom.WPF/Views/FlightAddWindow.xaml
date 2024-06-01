@@ -1,0 +1,130 @@
+﻿<Window
+    x:Class="Diplom.WPF.Views.FlightAddWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Diplom.WPF.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:Diplom.WPF.ViewModels"
+    Title="Добавление рейса"
+    Width="450"
+    Height="600"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <StackPanel.Resources>
+                <Style TargetType="TextBox">
+                    <Setter Property="Width" Value="200" />
+                    <Setter Property="FontSize" Value="14" />
+                </Style>
+                <Style TargetType="ComboBox">
+                    <Setter Property="Width" Value="200" />
+                </Style>
+                <Style TargetType="DatePicker">
+                    <Setter Property="DisplayDateStart" Value="01/01/2024" />
+                </Style>
+            </StackPanel.Resources>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Номер рейса:" />
+                <TextBox Margin="5" Text="{Binding Number, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Дата отправления:" />
+                <DatePicker Margin="5" SelectedDate="{Binding DepartureDate, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Время отправления:" />
+                <TextBox Margin="5" Text="{Binding DepartureTime, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Дата прибытия:" />
+                <DatePicker Margin="5" SelectedDate="{Binding ArrivalDate, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Время прибытия:" />
+                <TextBox Margin="5" Text="{Binding ArrivalTime, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Откуда:" />
+                <TextBox Margin="5" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Куда:" />
+                <TextBox Margin="5" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Самолет:" />
+                <ComboBox
+                    Height="20"
+                    Margin="5,0,5,0"
+                    DisplayMemberPath="RegistrationNumber"
+                    ItemsSource="{Binding Planes}"
+                    SelectedItem="{Binding Plane}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Дальность (км):" />
+                <TextBox Margin="5" Text="{Binding Range, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="150" Content="Добавить члена экипажа:" />
+                <StackPanel Margin="5,0,0,0" Orientation="Vertical">
+                    <ComboBox
+                        DisplayMemberPath="FullNameAndPost"
+                        ItemsSource="{Binding CrewMembers}"
+                        SelectedItem="{Binding SelectedCrewMember, Mode=TwoWay}" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <GroupBox
+            Grid.Row="1"
+            Margin="0,5,0,0"
+            Header="Бортовой состав">
+            <ListBox
+                Grid.Row="1"
+                MaxHeight="120"
+                BorderThickness="0"
+                ItemsSource="{Binding SelectedCrewMembers}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                            <Button
+                                Background="Transparent"
+                                Command="{Binding DataContext.RemoveCrewMemberCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                CommandParameter="{Binding}"
+                                Content="✖"
+                                FontSize="10"
+                                FontWeight="Bold"
+                                Foreground="Black" />
+                            <TextBlock Margin="5,0,0,0" Text="{Binding FullNameAndPost}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
+
+        <StackPanel
+            Grid.Row="2"
+            Margin="0,20,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Orientation="Horizontal">
+            <Button
+                Width="80"
+                Margin="5"
+                Command="{Binding AcceptCommand}"
+                Content="ОК" />
+            <Button
+                Width="80"
+                Margin="5"
+                Command="{Binding CancelCommand}"
+                Content="Отмена" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -69,7 +69,8 @@ namespace Diplom.WPF.Migrations
                     ArrivalDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     From = table.Column<string>(type: "text", nullable: false),
                     To = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false)
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    Range = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {

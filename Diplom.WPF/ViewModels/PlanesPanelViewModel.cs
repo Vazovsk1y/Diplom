@@ -77,6 +77,12 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
         var item = await dbContext.Planes.FirstOrDefaultAsync(e => e.Id == SelectedPlane!.Id);
         if (item is not null)
         {
+            if (await dbContext.Flights.AnyAsync(e => e.PlaneId == item.Id))
+            {
+                MessageBoxHelper.ShowErrorBox("Удаление невозможно, присутствуют связанные данные.");
+                return;
+            }
+
             Planes.Remove(SelectedPlane!);
             dbContext.Planes.Remove(item);
             await dbContext.SaveChangesAsync();

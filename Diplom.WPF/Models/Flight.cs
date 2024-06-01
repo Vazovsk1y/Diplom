@@ -35,6 +35,11 @@ public class Flight : Entity
     public required FlightStatus Status { get; set; }
 
     /// <summary>
+    /// Дистация полета, км.
+    /// </summary>
+    public required double Range { get; set; }
+
+    /// <summary>
     /// Бортовой состав рейса.
     /// </summary>
     public ICollection<CrewMemberFlight> CrewMembers { get; set; } = [];

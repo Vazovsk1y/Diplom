@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diplom.WPF.Migrations
 {
     [DbContext(typeof(DiplomDbContext))]
-    [Migration("20240529105441_Initial")]
+    [Migration("20240531065544_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -81,6 +81,9 @@ namespace Diplom.WPF.Migrations
 
                     b.Property<Guid>("PlaneId")
                         .HasColumnType("uuid");
+
+                    b.Property<double>("Range")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Status")
                         .IsRequired()

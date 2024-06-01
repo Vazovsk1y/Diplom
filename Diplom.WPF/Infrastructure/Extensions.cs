@@ -13,6 +13,15 @@ public static class Extensions
         return string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ErrorMessage));
     }
 
+    public static DateTimeOffset ToDateTimeOffset(this (DateOnly date, TimeOnly time) tuple)
+    {
+        var dateTime = tuple.date.ToDateTime(tuple.time);
+
+        var dateTimeOffset = new DateTimeOffset(dateTime, TimeSpan.Zero);
+
+        return dateTimeOffset;
+    }
+
     public static EnumValue ToEnumValue(this Enum value)
     {
         FieldInfo field = value.GetType().GetField(value.ToString());
@@ -28,6 +37,29 @@ public static class Extensions
             Id = crewMember.Id,
             FullName = crewMember.FullName,
             Type = crewMember.Type.ToEnumValue(),
+        };
+
+        result.SaveState();
+        return result;
+    }
+
+    public static FlightViewModel ToViewModel(this Flight flight)
+    {
+        var result = new FlightViewModel
+        {
+            Id = flight.Id,
+            FlightNotes = new (flight.Notes.Select(e => new FlightNoteInfo(e.Id, e.Type.ToEnumValue().Description, e.Title, e.Description))),
+            From = flight.From,
+            To = flight.To,
+            ArrivalDate = flight.ArrivalDate.ToDateOnly(),
+            ArrivalTime = flight.ArrivalDate.ToTimeOnly(),
+            CrewMembers = flight.CrewMembers.Select(e => e.CrewMember).Select(e => new CrewMemberInfo(e.Id, $"{e.FullName} ({e.Type.ToEnumValue().Description})")),
+            DepartureDate = flight.DepartureDate.ToDateOnly(),
+            DepartureTime = flight.DepartureDate.ToTimeOnly(),
+            Number = flight.Number,
+            Plane = new PlaneInfo(flight.Plane.Id, flight.Plane.RegistrationNumber, flight.Plane.Model, flight.Plane.Manufacturer),
+            Range = flight.Range,
+            Status = flight.Status.ToEnumValue(),
         };
 
         result.SaveState();
@@ -52,5 +84,15 @@ public static class Extensions
 
         result.SaveState();
         return result;
+    }
+
+    public static TimeOnly ToTimeOnly(this DateTimeOffset dateTimeOffset)
+    {
+        return TimeOnly.FromDateTime(dateTimeOffset.DateTime);
+    }
+
+    public static DateOnly ToDateOnly(this DateTimeOffset dateTimeOffset)
+    {
+        return DateOnly.FromDateTime(dateTimeOffset.DateTime);
     }
 }

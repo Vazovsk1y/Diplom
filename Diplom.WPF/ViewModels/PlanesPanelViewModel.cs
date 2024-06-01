@@ -144,6 +144,8 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
 
         await dbContext.SaveChangesAsync();
         SelectedPlane.SaveState();
+
+        MessageBoxHelper.ShowInfoBox("Данные успешно обновлены.");
     }
 
     public void Receive(PlaneAddedMessage message)

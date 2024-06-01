@@ -148,6 +148,8 @@ public partial class FlightsPanelViewModel : BaseViewModel,
 
         await dbContext.SaveChangesAsync();
         SelectedFlight.SaveState();
+
+        MessageBoxHelper.ShowInfoBox("Данные успешно обновлены.");
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteOrRollbackChangesOrUpdateOrAddNote))]

@@ -76,38 +76,47 @@
                         IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>
-            <StackPanel Grid.Column="1" Margin="5,0,5,0">
-                <ItemsControl
-                    MaxWidth="200"
-                    ItemsSource="{Binding SelectedFlight.FlightNotes}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Expander Header="{Binding Type}">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Название:" />
-                                        <TextBlock Margin="10,0,0,0" Text="{Binding Title}" />
+            <Grid Grid.Column="1"
+                        Margin="5,0,5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
+                    <ItemsControl MaxWidth="200"
+                                  ItemsSource="{Binding SelectedFlight.FlightNotes}"
+                                  >
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Expander Header="{Binding Type}">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Название:" />
+                                            <TextBlock Margin="10,0,0,0"
+                                                       Text="{Binding Title}" />
+                                        </StackPanel>
+                                        <TextBlock Text="Детально:" />
+                                        <TextBox IsReadOnly="True"
+                                                 Text="{Binding Description}"
+                                                 TextAlignment="Justify"
+                                                 TextWrapping="Wrap" />
                                     </StackPanel>
-                                    <TextBlock Text="Детально:" />
-                                    <TextBox
-                                        IsReadOnly="True"
-                                        Text="{Binding Description}"
-                                        TextAlignment="Justify"
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
-                            </Expander>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <Button Background="Transparent" Command="{Binding AddNoteCommand}">
-                    <TextBlock Text="+Новая заметка" TextDecorations="Underline" />
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                    
+                    
+                <Button Background="Transparent"
+                        Grid.Row="1"
+                        Command="{Binding AddNoteCommand}">
+                    <TextBlock Text="+Новая заметка"
+                               TextDecorations="Underline" />
                 </Button>
-
-            </StackPanel>
-
-
+            </Grid>
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">

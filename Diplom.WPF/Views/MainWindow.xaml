@@ -8,10 +8,8 @@
     xmlns:viewmodels="clr-namespace:Diplom.WPF.ViewModels"
     xmlns:views="clr-namespace:Diplom.WPF.Views"
     Title="Главное окно"
-    Width="800"
-    Height="450"
-    MinWidth="800"
-    MinHeight="450"
+    MinWidth="1200"
+    MinHeight="600"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -24,6 +22,7 @@
             Margin="5,0,0,0"
             HorizontalAlignment="Left"
             DisplayMemberPath="Title"
+            FontSize="16"
             ItemsSource="{Binding ComboBoxItems}"
             SelectedItem="{Binding SelectedItem}" />
         <ContentControl

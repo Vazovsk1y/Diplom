@@ -23,7 +23,6 @@
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <DataGrid
-            HorizontalAlignment="Left"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
             CanUserDeleteRows="False"
@@ -32,20 +31,22 @@
             SelectedItem="{Binding SelectedPlane}"
             SelectionMode="Single">
             <DataGrid.Resources>
-                <CollectionViewSource x:Key="AvailablePlaneTypes" Source="{Binding PlaneTypes}"/>
+                <CollectionViewSource x:Key="AvailablePlaneTypes" Source="{Binding PlaneTypes}" />
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding RegistrationNumber}" Header="Регистрационный номер" />
                 <DataGridTextColumn Binding="{Binding Manufacturer}" Header="Производитель" />
                 <DataGridTextColumn Binding="{Binding Model}" Header="Модель" />
-                <DataGridTextColumn Binding="{Binding PassengersCapacity}" Header="Вместимость(пассажиры)" />
+                <DataGridTextColumn Binding="{Binding PassengersCapacity}" Header="Вместимость пассажиров" />
                 <DataGridTextColumn Binding="{Binding Range}" Header="Макс. дистанция полета, км" />
                 <DataGridTextColumn Binding="{Binding MaxSpeed}" Header="Максимальная скорость, км/ч" />
                 <DataGridTextColumn Binding="{Binding FuelCapacity}" Header="Объем бака, л." />
                 <DataGridTextColumn Binding="{Binding FuelConsumption}" Header="Расход, л/100км" />
-                <DataGridComboBoxColumn SelectedItemBinding="{Binding Type}" ItemsSource="{Binding Source={StaticResource AvailablePlaneTypes}}"
-                                        DisplayMemberPath="Description"
-                                        Header="Тип"/>
+                <DataGridComboBoxColumn
+                    DisplayMemberPath="Description"
+                    Header="Тип"
+                    ItemsSource="{Binding Source={StaticResource AvailablePlaneTypes}}"
+                    SelectedItemBinding="{Binding Type}" />
                 <DataGridTextColumn
                     Width="20"
                     Binding="{Binding UpdatableSign}"

@@ -20,10 +20,11 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <ListBox BorderThickness="0"
-                     ItemsSource="{Binding CrewMembers}"
-                     SelectedItem="{Binding SelectedCrewMember}"
-                     SelectionMode="Single">
+            <ListBox
+                BorderThickness="0"
+                ItemsSource="{Binding CrewMembers}"
+                SelectedItem="{Binding SelectedCrewMember}"
+                SelectionMode="Single">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -31,36 +32,44 @@
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock HorizontalAlignment="Left"
-                                       FontSize="16"
-                                       Text="{Binding FullName}" />
-                            <TextBlock Grid.Column="1"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       FontSize="16"
-                                       TextAlignment="Center"
-                                       Foreground="Red"
-                                       Text="{Binding UpdatableSign}" />
+                            <TextBlock
+                                HorizontalAlignment="Left"
+                                FontSize="16"
+                                Text="{Binding FullName}" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Margin="10,0,0,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                Foreground="Red"
+                                Text="{Binding UpdatableSign}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <UniformGrid Grid.Row="1" Columns="2"
-                         Margin="0, 5, 0, 0">
-                <Button Command="{Binding AddCrewMemberCommand}"
-                        Content="Добавить" />
-                <Button Margin="5,0,0,0"
-                        Command="{Binding DeleteCrewMemberCommand}"
-                        Content="Удалить" />
+            <UniformGrid
+                Grid.Row="1"
+                Margin="0,5,0,0"
+                Columns="2">
+                <Button
+                    Command="{Binding AddCrewMemberCommand}"
+                    Content="Добавить"
+                    FontSize="16" />
+                <Button
+                    Margin="5,0,0,0"
+                    Command="{Binding DeleteCrewMemberCommand}"
+                    Content="Удалить"
+                    FontSize="16" />
             </UniformGrid>
         </Grid>
-        
+
         <GroupBox
             Grid.Column="1"
             Margin="10"
             BorderBrush="Black"
             Header="Детально">
-            <ContentControl Content="{Binding SelectedCrewMember}" HorizontalAlignment="Left">
+            <ContentControl HorizontalAlignment="Left" Content="{Binding SelectedCrewMember}">
                 <ContentControl.Resources>
                     <DataTemplate DataType="{x:Type viewmodels:CrewMemberViewModel}">
                         <Grid>
@@ -79,7 +88,7 @@
                                 </StackPanel.Resources>
                                 <TextBlock Text="ФИО:" />
                                 <TextBox Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock Text="Должность:" Margin="0, 10, 0, 0"/>
+                                <TextBlock Margin="0,10,0,0" Text="Должность:" />
                                 <ComboBox
                                     DisplayMemberPath="Description"
                                     FontSize="16"

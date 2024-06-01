@@ -14,8 +14,8 @@ public partial class MainWindowViewModel : ObservableObject
         CrewMembersPanelViewModel crewMembersPanelViewModel,
         FlightsPanelViewModel flightsPanelViewModel)
     {
-        ComboBoxItems.Add(flightsPanelViewModel);
         ComboBoxItems.Add(planesPanelViewModel);
+        ComboBoxItems.Add(flightsPanelViewModel);
         ComboBoxItems.Add(crewMembersPanelViewModel);
         ActivateComboBoxItems();
         SelectedItem = ComboBoxItems.FirstOrDefault();

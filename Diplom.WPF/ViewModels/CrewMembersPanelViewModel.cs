@@ -125,6 +125,8 @@ public partial class CrewMembersPanelViewModel : BaseViewModel,
 
         await dbContext.SaveChangesAsync();
         crewMemberViewModel.SaveState();
+
+        MessageBoxHelper.ShowInfoBox("Данные успешно обновлены.");
     }
 
     public void Receive(CrewMemberAddedMessage message)

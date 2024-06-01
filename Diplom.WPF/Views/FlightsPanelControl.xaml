@@ -8,7 +8,7 @@
     xmlns:viewmodels="clr-namespace:Diplom.WPF.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:FlightsPanelViewModel}"
     d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignWidth="1500"
     mc:Ignorable="d">
     <UserControl.Resources>
         <Style TargetType="Button">
@@ -22,6 +22,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -75,7 +76,7 @@
                         IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>
-            <StackPanel Grid.Column="1" Margin="5, 0, 5, 0">
+            <StackPanel Grid.Column="1" Margin="5,0,5,0">
                 <ItemsControl
                     MaxWidth="200"
                     ItemsSource="{Binding SelectedFlight.FlightNotes}"
@@ -90,7 +91,11 @@
                                         <TextBlock Margin="10,0,0,0" Text="{Binding Title}" />
                                     </StackPanel>
                                     <TextBlock Text="Детально:" />
-                                    <TextBox IsReadOnly="True" TextWrapping="Wrap" TextAlignment="Justify" Text="{Binding Description}" />
+                                    <TextBox
+                                        IsReadOnly="True"
+                                        Text="{Binding Description}"
+                                        TextAlignment="Justify"
+                                        TextWrapping="Wrap" />
                                 </StackPanel>
                             </Expander>
                         </DataTemplate>
@@ -124,6 +129,53 @@
                 Margin="5,5,0,0"
                 Command="{Binding RollbackChangesCommand}"
                 Content="Отменить изменения" />
+        </StackPanel>
+
+        <DataGrid
+            Grid.Row="2"
+            Margin="0,5,0,0"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            IsReadOnly="True"
+            ItemsSource="{Binding Report}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Number}" Header="Номер" />
+                <DataGridTextColumn Binding="{Binding DepartureDateTime}" Header="Дата и время вылета" />
+                <DataGridTextColumn Binding="{Binding ArrivalDateTime}" Header="Дата и время прилета" />
+                <DataGridTextColumn Binding="{Binding TravelTime}" Header="Время в пути (минуты)" />
+                <DataGridTextColumn Binding="{Binding From}" Header="Откуда" />
+                <DataGridTextColumn Binding="{Binding To}" Header="Куда" />
+                <DataGridTextColumn Binding="{Binding Range}" Header="Расстояние (км)" />
+                <DataGridTextColumn Binding="{Binding PlaneNumber}" Header="Номер самолета" />
+                <DataGridTextColumn Binding="{Binding PlaneManufactureAndModel}" Header="Самолет" />
+                <DataGridTemplateColumn Header="Бортовой состав">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding CrewMembers}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Binding="{Binding AccidentCount}" Header="Количество инцидентов" />
+                <DataGridTextColumn Binding="{Binding TotalNotesCount}" Header="Общее количество заметок" />
+                <DataGridTextColumn Binding="{Binding FuelUsed}" Header="Расход топлива (л)" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel
+            Grid.Row="3"
+            Margin="0,5,0,0"
+            Orientation="Horizontal">
+            <Button Command="{Binding GenerateReportCommand}" Content="Сгенерировать отчет" />
+            <Button
+                Margin="5,0,0,0"
+                Command="{Binding ExportToExcelCommand}"
+                Content="Экспорт в Excel" />
         </StackPanel>
     </Grid>
 </UserControl>

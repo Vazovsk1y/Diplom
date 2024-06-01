@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 
 namespace Diplom.WPF.ViewModels;
-
 public partial class FlightViewModel : ModifiableViewModel<FlightViewModel>
 {
     public required Guid Id { get; init; }

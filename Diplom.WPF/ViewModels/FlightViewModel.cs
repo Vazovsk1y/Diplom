@@ -28,14 +28,6 @@ public partial class FlightViewModel : ModifiableViewModel<FlightViewModel>
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(UpdatableSign))]
-    private string _from = null!;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(UpdatableSign))]
-    private string _to = null!;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(UpdatableSign))]
     private EnumValue _status = null!;
 
     [ObservableProperty]
@@ -44,14 +36,14 @@ public partial class FlightViewModel : ModifiableViewModel<FlightViewModel>
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(UpdatableSign))]
+    private RouteInfo _route = null!;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UpdatableSign))]
     private IEnumerable<CrewMemberInfo> _crewMembers = [];
 
     [ObservableProperty]
     private ObservableCollection<FlightNoteInfo> _flightNotes = [];
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(UpdatableSign))]
-    private double _range;
 
     public override bool IsModified()
     {
@@ -60,11 +52,9 @@ public partial class FlightViewModel : ModifiableViewModel<FlightViewModel>
                DepartureTime != PreviousState.DepartureTime ||
                ArrivalDate != PreviousState.ArrivalDate ||
                ArrivalTime != PreviousState.ArrivalTime ||
-               From != PreviousState.From ||
-               To != PreviousState.To ||
                Status != PreviousState.Status ||
                Plane != PreviousState.Plane ||
-               Range != PreviousState.Range;
+               Route != PreviousState.Route;
     }
 
     public override void RollBackChanges()
@@ -74,11 +64,9 @@ public partial class FlightViewModel : ModifiableViewModel<FlightViewModel>
         DepartureTime = PreviousState.DepartureTime;
         ArrivalDate = PreviousState.ArrivalDate;
         ArrivalTime = PreviousState.ArrivalTime;
-        From = PreviousState.From;
-        To = PreviousState.To;
         Status = PreviousState.Status;
         Plane = PreviousState.Plane;
-        Range = PreviousState.Range;
+        Route = PreviousState.Route;
         OnPropertyChanged(nameof(UpdatableSign));
     }
 }

@@ -19,22 +19,34 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <Grid>
+
+        <StackPanel Margin="0,5,0,5">
+            <TextBox
+                Width="200"
+                Height="25"
+                HorizontalAlignment="Left"
+                FontSize="14"
+                Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged, Delay=550}" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
+
             <DataGrid
                 AutoGenerateColumns="False"
                 CanUserAddRows="False"
                 CanUserDeleteRows="False"
                 FontSize="14"
-                ItemsSource="{Binding Flights}"
+                ItemsSource="{Binding FlightsView}"
                 SelectedItem="{Binding SelectedFlight}"
                 SelectionMode="Single">
                 <DataGrid.Resources>
@@ -46,8 +58,18 @@
                     <DataGridTextColumn Binding="{Binding DepartureTime}" Header="Время вылета" />
                     <DataGridTextColumn Binding="{Binding ArrivalDate}" Header="Дата прибытия" />
                     <DataGridTextColumn Binding="{Binding ArrivalTime}" Header="Время прибытия" />
-                    <DataGridTextColumn Binding="{Binding From}" Header="Откуда" />
-                    <DataGridTextColumn Binding="{Binding To}" Header="Куда" />
+                    <DataGridTextColumn
+                        Binding="{Binding Route.From}"
+                        Header="Откуда"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Binding="{Binding Route.To}"
+                        Header="Куда"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Binding="{Binding Route.Range}"
+                        Header="Расстояние"
+                        IsReadOnly="True" />
                     <DataGridComboBoxColumn
                         DisplayMemberPath="Description"
                         Header="Статус"
@@ -76,50 +98,47 @@
                         IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>
-            <Grid Grid.Column="1"
-                        Margin="5,0,5,0">
+
+            <Grid Grid.Column="1" Margin="5,0,5,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
-                
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                              VerticalScrollBarVisibility="Auto">
-                    <ItemsControl MaxWidth="200"
-                                  ItemsSource="{Binding SelectedFlight.FlightNotes}"
-                                  >
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl MaxWidth="200" ItemsSource="{Binding SelectedFlight.FlightNotes}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Expander Header="{Binding Type}">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="Название:" />
-                                            <TextBlock Margin="10,0,0,0"
-                                                       Text="{Binding Title}" />
+                                            <TextBlock Margin="10,0,0,0" Text="{Binding Title}" />
                                         </StackPanel>
                                         <TextBlock Text="Детально:" />
-                                        <TextBox IsReadOnly="True"
-                                                 Text="{Binding Description}"
-                                                 TextAlignment="Justify"
-                                                 TextWrapping="Wrap" />
+                                        <TextBox
+                                            IsReadOnly="True"
+                                            Text="{Binding Description}"
+                                            TextAlignment="Justify"
+                                            TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Expander>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
-                    
-                    
-                <Button Background="Transparent"
-                        Grid.Row="1"
-                        Command="{Binding AddNoteCommand}">
-                    <TextBlock Text="+Новая заметка"
-                               TextDecorations="Underline" />
+
+
+                <Button
+                    Grid.Row="3"
+                    Background="Transparent"
+                    Command="{Binding AddNoteCommand}">
+                    <TextBlock Text="+Новая заметка" TextDecorations="Underline" />
                 </Button>
             </Grid>
         </Grid>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Button
                 Margin="0,5,0,0"
                 Command="{Binding AddFlightCommand}"
@@ -141,7 +160,7 @@
         </StackPanel>
 
         <DataGrid
-            Grid.Row="2"
+            Grid.Row="3"
             Margin="0,5,0,0"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
@@ -176,8 +195,9 @@
                 <DataGridTextColumn Binding="{Binding FuelUsed}" Header="Расход топлива (л)" />
             </DataGrid.Columns>
         </DataGrid>
+
         <StackPanel
-            Grid.Row="3"
+            Grid.Row="4"
             Margin="0,5,0,0"
             Orientation="Horizontal">
             <Button Command="{Binding GenerateReportCommand}" Content="Сгенерировать отчет" />

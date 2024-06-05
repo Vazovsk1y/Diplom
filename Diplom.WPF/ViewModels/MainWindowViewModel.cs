@@ -12,11 +12,13 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(
         PlanesPanelViewModel planesPanelViewModel,
         CrewMembersPanelViewModel crewMembersPanelViewModel,
-        FlightsPanelViewModel flightsPanelViewModel)
+        FlightsPanelViewModel flightsPanelViewModel, 
+        RoutesPanelViewModel routesPanelViewModel)
     {
         ComboBoxItems.Add(planesPanelViewModel);
         ComboBoxItems.Add(flightsPanelViewModel);
         ComboBoxItems.Add(crewMembersPanelViewModel);
+        ComboBoxItems.Add(routesPanelViewModel);
         ActivateComboBoxItems();
         SelectedItem = ComboBoxItems.FirstOrDefault();
     }

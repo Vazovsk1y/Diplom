@@ -13,6 +13,19 @@ public static class Extensions
         return string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ErrorMessage));
     }
 
+    public static RouteViewModel ToViewModel(this Route route)
+    {
+        var result = new RouteViewModel
+        {
+            Id = route.Id,
+            From = route.From,
+            Range = route.Range,
+            To = route.To,
+        };
+
+        result.SaveState();
+        return result;
+    }
     public static DateTimeOffset ToDateTimeOffset(this (DateOnly date, TimeOnly time) tuple)
     {
         var dateTime = tuple.date.ToDateTime(tuple.time);
@@ -49,16 +62,14 @@ public static class Extensions
         {
             Id = flight.Id,
             FlightNotes = new (flight.Notes.Select(e => new FlightNoteInfo(e.Id, e.Type.ToEnumValue().Description, e.Title, e.Description))),
-            From = flight.From,
-            To = flight.To,
             ArrivalDate = flight.ArrivalDate.ToDateOnly(),
             ArrivalTime = flight.ArrivalDate.ToTimeOnly(),
             CrewMembers = flight.CrewMembers.Select(e => e.CrewMember).Select(e => new CrewMemberInfo(e.Id, $"{e.FullName} ({e.Type.ToEnumValue().Description})")),
             DepartureDate = flight.DepartureDate.ToDateOnly(),
             DepartureTime = flight.DepartureDate.ToTimeOnly(),
             Number = flight.Number,
+            Route = new RouteInfo(flight.Route.Id, flight.Route.From, flight.Route.To, flight.Route.Range),
             Plane = new PlaneInfo(flight.Plane.Id, flight.Plane.RegistrationNumber, flight.Plane.Model, flight.Plane.Manufacturer),
-            Range = flight.Range,
             Status = flight.Status.ToEnumValue(),
         };
 

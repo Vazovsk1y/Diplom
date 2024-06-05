@@ -23,6 +23,7 @@ public static class Registrator
         collection.AddWindowWithViewModelTransient<PlaneAddWindow, PlaneAddViewModel>();
         collection.AddWindowWithViewModelTransient<CrewMemberAddWindow, CrewMemberAddViewModel>();
         collection.AddWindowWithViewModelTransient<FlightAddWindow, FlightAddViewModel>();
+        collection.AddWindowWithViewModelTransient<RouteAddWindow, RouteAddViewModel>();
 
         collection.AddTransient<FlightNoteAddWindow>();
         collection.AddTransient<FlightNoteAddViewModel>();
@@ -30,6 +31,7 @@ public static class Registrator
         collection.AddSingleton<FlightsPanelViewModel>();
         collection.AddSingleton<PlanesPanelViewModel>();
         collection.AddSingleton<CrewMembersPanelViewModel>();
+        collection.AddSingleton<RoutesPanelViewModel>();
 
         collection.AddDbContext<DiplomDbContext>(e =>
         {

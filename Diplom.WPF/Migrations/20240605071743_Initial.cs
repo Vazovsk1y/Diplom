@@ -45,6 +45,20 @@ namespace Diplom.WPF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Routes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    From = table.Column<string>(type: "text", nullable: false),
+                    To = table.Column<string>(type: "text", nullable: false),
+                    Range = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Routes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -64,13 +78,11 @@ namespace Diplom.WPF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     PlaneId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RouteId = table.Column<Guid>(type: "uuid", nullable: false),
                     Number = table.Column<string>(type: "text", nullable: false),
                     DepartureDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ArrivalDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    From = table.Column<string>(type: "text", nullable: false),
-                    To = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
-                    Range = table.Column<double>(type: "double precision", nullable: false)
+                    Status = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,6 +91,12 @@ namespace Diplom.WPF.Migrations
                         name: "FK_Flights_Planes_PlaneId",
                         column: x => x.PlaneId,
                         principalTable: "Planes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Flights_Routes_RouteId",
+                        column: x => x.RouteId,
+                        principalTable: "Routes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -150,6 +168,11 @@ namespace Diplom.WPF.Migrations
                 column: "PlaneId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Flights_RouteId",
+                table: "Flights",
+                column: "RouteId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Planes_RegistrationNumber",
                 table: "Planes",
                 column: "RegistrationNumber",
@@ -182,6 +205,9 @@ namespace Diplom.WPF.Migrations
 
             migrationBuilder.DropTable(
                 name: "Planes");
+
+            migrationBuilder.DropTable(
+                name: "Routes");
         }
     }
 }

@@ -15,6 +15,9 @@ public partial class FlightAddViewModel : DialogViewModel
     public required Guid Id { get; set; }
 
     public ObservableCollection<PlaneInfo> Planes { get; } = [];
+
+    public ObservableCollection<RouteInfo> Routes { get; } = [];
+
     public ObservableCollection<CrewMemberInfo> CrewMembers { get; } = [];
 
     [ObservableProperty]
@@ -39,19 +42,11 @@ public partial class FlightAddViewModel : DialogViewModel
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AcceptCommand))]
-    private string _from = null!;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AcceptCommand))]
-    private string _to = null!;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AcceptCommand))]
     private PlaneInfo _plane = null!;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AcceptCommand))]
-    private double _range;
+    private RouteInfo _selectedRoute = null!;
 
     public ObservableCollection<CrewMemberInfo> SelectedCrewMembers { get; } = [];
 
@@ -61,7 +56,8 @@ public partial class FlightAddViewModel : DialogViewModel
     public CrewMemberInfo? SelectedCrewMember
     {
         get => _selectedCrewMember;
-        set {
+        set
+        {
 
             if (!SetProperty(ref _selectedCrewMember, value) || value is null || SelectedCrewMembers.Any(e => e.Id == value.Id))
             {
@@ -87,15 +83,14 @@ public partial class FlightAddViewModel : DialogViewModel
         var dbContext = scope.ServiceProvider.GetRequiredService<DiplomDbContext>();
         var flight = new Flight
         {
-            Range = Range,
+            RouteId = SelectedRoute.Id,
             Number = Number.Trim(),
             DepartureDate = (DateOnly.FromDateTime(DepartureDate), DepartureTime).ToDateTimeOffset(),
             ArrivalDate = (DateOnly.FromDateTime(ArrivalDate), ArrivalTime).ToDateTimeOffset(),
-            From = From.Trim(),
-            To = To.Trim(),
             Status = FlightStatus.Scheduled,
             PlaneId = Plane.Id,
             Plane = dbContext.Planes.First(e => e.Id == Plane.Id),
+            Route = dbContext.Routes.First(e => e.Id == SelectedRoute.Id),
         };
         flight.CrewMembers = [.. dbContext.CrewMembers.Where(e => SelectedCrewMembers.Select(i => i.Id).Contains(e.Id)).Select(e => new CrewMemberFlight { CrewMemberId = e.Id, FlightId = flight.Id, CrewMember = e })];
 
@@ -128,9 +123,8 @@ public partial class FlightAddViewModel : DialogViewModel
     {
         return !(
             string.IsNullOrWhiteSpace(Number) ||
-            string.IsNullOrWhiteSpace(From) ||
-            string.IsNullOrWhiteSpace(To) ||
             Plane is null ||
+            SelectedRoute is null ||
             DepartureDate == default ||
             DepartureTime == default ||
             ArrivalDate == default ||
@@ -147,23 +141,39 @@ public partial class FlightAddViewModel : DialogViewModel
         var dbContext = scope.ServiceProvider.GetRequiredService<DiplomDbContext>();
 
         var planes = dbContext.Planes
-            .Where(e => !dbContext.Flights.Where(e => e.Status != FlightStatus.Completed || e.Status != FlightStatus.Canceled).Select(e => e.PlaneId).Contains(e.Id))
-            .ToList();
+        .Where(p => !dbContext.Flights
+        .Where(f => f.Status != FlightStatus.Completed && f.Status != FlightStatus.Canceled)
+        .Select(f => f.PlaneId)
+        .Contains(p.Id))
+        .ToList();
 
         foreach (var plane in planes)
         {
             Planes.Add(new PlaneInfo(plane.Id, plane.RegistrationNumber, plane.Model, plane.Manufacturer));
         }
 
-        var crewMembers = dbContext.CrewMembers.Where(e => 
-        !dbContext.CrewMemberFlights.Include(e => e.Flight).Any(c => (c.Flight.Status != FlightStatus.Completed || c.Flight.Status != FlightStatus.Canceled) && c.CrewMemberId == e.Id))
-            .ToList();
+        var crewMembers = dbContext.CrewMembers
+        .Where(cm => !dbContext.CrewMemberFlights
+        .Include(cmf => cmf.Flight)
+        .Any(cmf => cmf.CrewMemberId == cm.Id && cmf.Flight.Status != FlightStatus.Completed && cmf.Flight.Status != FlightStatus.Canceled))
+        .ToList();
 
         foreach (var crewMember in crewMembers)
         {
             CrewMembers.Add(new CrewMemberInfo(crewMember.Id, $"{crewMember.FullName} ({crewMember.Type.ToEnumValue().Description})"));
         }
+
+        var routes = dbContext.Routes.Select(e => new RouteInfo(e.Id, e.From, e.To, e.Range)).ToList();
+        foreach (var route in routes)
+        {
+            Routes.Add(route);
+        }
     }
+}
+
+public record RouteInfo(Guid Id, string From, string To, double Range)
+{
+    public string DisplayRow => $"{From} {To} - {Range}км";
 }
 
 public record FlightAddedMessage(FlightViewModel ViewModel);

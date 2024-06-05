@@ -17,10 +17,22 @@
         </Grid.ColumnDefinitions>
         <Grid MaxWidth="250">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
+
+            <StackPanel Margin="0,5,0,5">
+                <TextBox
+                    Width="200"
+                    Height="25"
+                    HorizontalAlignment="Left"
+                    FontSize="14"
+                    Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged, Delay=550}" />
+            </StackPanel>
+
             <ListBox
+                Grid.Row="1"
                 BorderThickness="0"
                 ItemsSource="{Binding CrewMembers}"
                 SelectedItem="{Binding SelectedCrewMember}"
@@ -49,7 +61,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <UniformGrid
-                Grid.Row="1"
+                Grid.Row="2"
                 Margin="0,5,0,0"
                 Columns="2">
                 <Button

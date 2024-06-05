@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diplom.WPF.Migrations
 {
     [DbContext(typeof(DiplomDbContext))]
-    [Migration("20240531065544_Initial")]
+    [Migration("20240605071743_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -71,10 +71,6 @@ namespace Diplom.WPF.Migrations
                     b.Property<DateTimeOffset>("DepartureDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("From")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasColumnType("text");
@@ -82,14 +78,10 @@ namespace Diplom.WPF.Migrations
                     b.Property<Guid>("PlaneId")
                         .HasColumnType("uuid");
 
-                    b.Property<double>("Range")
-                        .HasColumnType("double precision");
+                    b.Property<Guid>("RouteId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("To")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -99,6 +91,8 @@ namespace Diplom.WPF.Migrations
                         .IsUnique();
 
                     b.HasIndex("PlaneId");
+
+                    b.HasIndex("RouteId");
 
                     b.ToTable("Flights");
                 });
@@ -176,6 +170,28 @@ namespace Diplom.WPF.Migrations
                     b.ToTable("Planes");
                 });
 
+            modelBuilder.Entity("Diplom.WPF.Models.Route", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("From")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("Range")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("To")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Routes");
+                });
+
             modelBuilder.Entity("Diplom.WPF.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -229,7 +245,15 @@ namespace Diplom.WPF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Diplom.WPF.Models.Route", "Route")
+                        .WithMany()
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Plane");
+
+                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("Diplom.WPF.Models.FlightNote", b =>

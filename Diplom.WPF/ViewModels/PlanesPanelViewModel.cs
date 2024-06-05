@@ -8,6 +8,8 @@ using Diplom.WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace Diplom.WPF.ViewModels;
 
@@ -24,6 +26,41 @@ public partial class PlanesPanelViewModel : BaseViewModel, IComboBoxItem, IRecip
     private PlaneViewModel? _selectedPlane;
 
     public string Title => "Самолеты";
+
+    public PlanesPanelViewModel()
+    {
+        PlanesView = CollectionViewSource.GetDefaultView(Planes);
+        PlanesView.Filter = Filter;
+
+        bool Filter(object obj)
+        {
+            if (string.IsNullOrWhiteSpace(FilterText))
+            {
+                return true;
+            }
+
+            return obj is PlaneViewModel plane && (plane.RegistrationNumber.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || plane.Type.Description.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || plane.Manufacturer.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || plane.Model.Contains(FilterText, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    private string? _filterText;
+
+    public string? FilterText
+    {
+        get => _filterText;
+        set
+        {
+            if (SetProperty(ref _filterText, value))
+            {
+                PlanesView?.Refresh();
+            }
+        }
+    }
+
+    public ICollectionView PlanesView { get; }
 
     protected override void OnActivated()
     {

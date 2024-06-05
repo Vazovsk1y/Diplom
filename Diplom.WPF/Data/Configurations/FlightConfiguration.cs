@@ -19,5 +19,7 @@ public class FlightConfiguration : IEntityTypeConfiguration<Flight>
         builder.HasMany(e => e.Notes).WithOne().HasForeignKey(e => e.FlightId);
 
         builder.HasOne(e => e.Plane).WithMany().HasForeignKey(e => e.PlaneId);
+
+        builder.HasOne(e => e.Route).WithMany().HasForeignKey(e => e.RouteId);
     }
 }

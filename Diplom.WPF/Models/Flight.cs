@@ -6,6 +6,8 @@ public class Flight : Entity
 {
     public required Guid PlaneId { get; init; }
 
+    public required Guid RouteId { get; init; }
+
     /// <summary>
     /// Номер рейса.
     /// </summary>
@@ -21,23 +23,8 @@ public class Flight : Entity
     /// </summary>
     public required DateTimeOffset ArrivalDate { get; set; }
 
-    /// <summary>
-    /// Место отправления.
-    /// </summary>
-    public required string From { get; set; }
-
-    /// <summary>
-    /// Место прибытия.
-    /// </summary>
-    public required string To { get; set; }
-
 
     public required FlightStatus Status { get; set; }
-
-    /// <summary>
-    /// Дистация полета, км.
-    /// </summary>
-    public required double Range { get; set; }
 
     /// <summary>
     /// Бортовой состав рейса.
@@ -51,6 +38,8 @@ public class Flight : Entity
 
 
     public Plane Plane { get; set; } = null!;
+
+    public Route Route { get; set; } = null!;
 }
 
 public enum FlightStatus

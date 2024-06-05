@@ -9,7 +9,9 @@ using Diplom.WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Data;
 
 namespace Diplom.WPF.ViewModels;
 
@@ -34,6 +36,44 @@ public partial class FlightsPanelViewModel : BaseViewModel,
 
     public string Title => "Рейсы";
 
+    private string? _filterText;
+
+    public string? FilterText
+    {
+        get => _filterText;
+        set
+        {
+            if (SetProperty(ref _filterText, value))
+            {
+                FlightsView?.Refresh();
+            }
+        }
+    }
+
+    public ICollectionView FlightsView { get; }
+
+    public FlightsPanelViewModel()
+    {
+        FlightsView = CollectionViewSource.GetDefaultView(Flights);
+        FlightsView.Filter = Filter;
+
+        bool Filter(object obj)
+        {
+            if (string.IsNullOrWhiteSpace(FilterText))
+            {
+                return true;
+            }
+
+            return obj is FlightViewModel flight && (flight.Number.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || flight.Plane.RegistrationNumber.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || flight.Plane.Manufacturer.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || flight.Plane.Model.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || flight.Route.From.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || flight.Route.To.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || flight.Status.Description.Contains(FilterText, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
     protected override void OnActivated()
     {
         base.OnActivated();
@@ -43,6 +83,7 @@ public partial class FlightsPanelViewModel : BaseViewModel,
 
         var vms = dbContext
             .Flights
+            .Include(e => e.Route)
             .Include(e => e.CrewMembers)
             .ThenInclude(e => e.CrewMember)
             .Include(e => e.Notes)
@@ -125,12 +166,9 @@ public partial class FlightsPanelViewModel : BaseViewModel,
         var dbContext = scope.ServiceProvider.GetRequiredService<DiplomDbContext>();
         var flight = dbContext.Flights.Include(e => e.CrewMembers).First(e => e.Id == SelectedFlight!.Id);
 
-        flight.From = SelectedFlight.From.Trim();
-        flight.To = SelectedFlight.To.Trim();
         flight.Status = Enum.Parse<FlightStatus>(SelectedFlight.Status.Value.ToString());
         flight.ArrivalDate = (SelectedFlight.ArrivalDate, SelectedFlight.ArrivalTime).ToDateTimeOffset();
         flight.DepartureDate = (SelectedFlight.DepartureDate, SelectedFlight.DepartureTime).ToDateTimeOffset();
-        flight.Range = SelectedFlight.Range;
         flight.Number = SelectedFlight.Number.Trim();
 
         if (await dbContext.Flights.AnyAsync(e => e.Id != flight.Id && e.Number == flight.Number))
@@ -178,6 +216,7 @@ public partial class FlightsPanelViewModel : BaseViewModel,
             .Flights
             .Include(e => e.Plane)
             .Include(e => e.Notes)
+            .Include(e => e.Route)
             .Include(e => e.CrewMembers)
             .ThenInclude(e => e.CrewMember)
             .Where(e => e.Status == FlightStatus.Completed)
@@ -187,16 +226,16 @@ public partial class FlightsPanelViewModel : BaseViewModel,
                 e.DepartureDate.ToString("dd.MM.yyyy HH:mm"),
                 e.ArrivalDate.ToString("dd.MM.yyyy HH:mm"),
                 (e.ArrivalDate - e.DepartureDate).TotalMinutes,
-                e.From,
-                e.To,
-                e.Range,
+                e.Route.From,
+                e.Route.To,
+                e.Route.Range,
                 string.Join(",", e.CrewMembers.Select(e => $"{e.CrewMember.FullName} ({e.CrewMember.Type.ToEnumValue().Description})")),
                 e.Plane.RegistrationNumber,
                 $"{e.Plane.Manufacturer} {e.Plane.Model}",
                 e.CrewMembers.Select(e => $"{e.CrewMember.FullName} ({e.CrewMember.Type.ToEnumValue().Description})"),
                 e.Notes.Where(e => e.Type == FlightNoteTypes.Accident).Count(),
                 e.Notes.Count(),
-                (decimal)(e.Range / 100 * e.Plane.FuelConsumption)
+                (decimal)(e.Route.Range / 100 * e.Plane.FuelConsumption)
                 ))
             .ToListAsync(); 
     }
@@ -234,6 +273,7 @@ public partial class FlightsPanelViewModel : BaseViewModel,
             .Flights
             .Include(e => e.Plane)
             .Include(e => e.Notes)
+            .Include(e => e.Route)
             .Include(e => e.CrewMembers)
             .ThenInclude(e => e.CrewMember)
             .Where(e => e.Status == FlightStatus.Completed)
@@ -243,16 +283,16 @@ public partial class FlightsPanelViewModel : BaseViewModel,
                 e.DepartureDate.ToString("dd.MM.yyyy HH:mm"),
                 e.ArrivalDate.ToString("dd.MM.yyyy HH:mm"),
                 (e.ArrivalDate - e.DepartureDate).TotalMinutes,
-                e.From,
-                e.To,
-                e.Range,
+                e.Route.From,
+                e.Route.To,
+                e.Route.Range,
                 string.Join(",", e.CrewMembers.Select(e => $"{e.CrewMember.FullName} ({e.CrewMember.Type.ToEnumValue().Description})")),
                 e.Plane.RegistrationNumber,
                 $"{e.Plane.Manufacturer} {e.Plane.Model}",
                 e.CrewMembers.Select(e => $"{e.CrewMember.FullName} ({e.CrewMember.Type.ToEnumValue().Description})"),
                 e.Notes.Where(e => e.Type == FlightNoteTypes.Accident).Count(),
                 e.Notes.Count(),
-                (decimal)(e.Range / 100 * e.Plane.FuelConsumption)
+                (decimal)(e.Route.Range / 100 * e.Plane.FuelConsumption)
                 ))
             .ToListAsync();
 

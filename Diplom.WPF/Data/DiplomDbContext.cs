@@ -13,6 +13,8 @@ public class DiplomDbContext(DbContextOptions<DiplomDbContext> options) : DbCont
     public DbSet<FlightNote> FlightNotes { get; set; }
     public DbSet<Plane> Planes { get; set; }
 
+    public DbSet<Route> Routes { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Diplom.WPF.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewmodels="clr-namespace:Diplom.WPF.ViewModels"
     Title="Добавление рейса"
     Width="450"
@@ -37,7 +38,10 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="150" Content="Дата отправления:" />
-                <DatePicker Margin="5" SelectedDate="{Binding DepartureDate, UpdateSourceTrigger=PropertyChanged}" />
+                <DatePicker
+                    Margin="5"
+                    DisplayDateStart="{x:Static system:DateTime.Today}"
+                    SelectedDate="{Binding DepartureDate, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="150" Content="Время отправления:" />
@@ -52,12 +56,13 @@
                 <TextBox Margin="5" Text="{Binding ArrivalTime, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Label Width="150" Content="Откуда:" />
-                <TextBox Margin="5" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="150" Content="Куда:" />
-                <TextBox Margin="5" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" />
+                <Label Width="150" Content="Маршрут:" />
+                <ComboBox
+                    Height="20"
+                    Margin="5,0,5,0"
+                    DisplayMemberPath="DisplayRow"
+                    ItemsSource="{Binding Routes}"
+                    SelectedItem="{Binding SelectedRoute}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="150" Content="Самолет:" />
@@ -67,10 +72,6 @@
                     DisplayMemberPath="RegistrationNumber"
                     ItemsSource="{Binding Planes}"
                     SelectedItem="{Binding Plane}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="150" Content="Дальность (км):" />
-                <TextBox Margin="5" Text="{Binding Range, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="150" Content="Добавить члена экипажа:" />

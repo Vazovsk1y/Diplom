@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Diplom.WPF.Data;
 using Diplom.WPF.Infrastructure;
-using Diplom.WPF.Models;
 using Diplom.WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,19 +12,19 @@ using System.Windows.Data;
 
 namespace Diplom.WPF.ViewModels;
 
-public partial class CrewMembersPanelViewModel : BaseViewModel, 
+public partial class RoutesPanelViewModel : BaseViewModel,
     IComboBoxItem,
-    IRecipient<CrewMemberAddedMessage>
+    IRecipient<RouteAddedMessage>
 {
-    public ObservableCollection<CrewMemberViewModel> CrewMembers { get; } = [];
-
-    public ObservableCollection<EnumValue> Types { get; } = [];
+    public ObservableCollection<RouteViewModel> Routes { get; } = new();
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(DeleteCrewMemberCommand))]
-    private CrewMemberViewModel? _selectedCrewMember;
+    [NotifyCanExecuteChangedFor(nameof(DeleteRouteCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RollbackChangesCommand))]
+    [NotifyCanExecuteChangedFor(nameof(UpdateRouteCommand))]
+    private RouteViewModel? _selectedRoute;
 
-    public string Title => "Члены экипажа";
+    public string Title => "Маршруты";
 
     private string? _filterText;
 
@@ -36,17 +35,17 @@ public partial class CrewMembersPanelViewModel : BaseViewModel,
         {
             if (SetProperty(ref _filterText, value))
             {
-                CrewMembersView?.Refresh();
+                RoutesView?.Refresh();
             }
         }
     }
 
-    public ICollectionView CrewMembersView { get; }
+    public ICollectionView RoutesView { get; }
 
-    public CrewMembersPanelViewModel()
+    public RoutesPanelViewModel()
     {
-        CrewMembersView = CollectionViewSource.GetDefaultView(CrewMembers);
-        CrewMembersView.Filter = Filter;
+        RoutesView = CollectionViewSource.GetDefaultView(Routes);
+        RoutesView.Filter = Filter;
 
         bool Filter(object obj)
         {
@@ -55,9 +54,8 @@ public partial class CrewMembersPanelViewModel : BaseViewModel,
                 return true;
             }
 
-            return obj is CrewMemberViewModel crewMember && (crewMember.FullName.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
-                || crewMember.Type.Description.Contains(FilterText, StringComparison.OrdinalIgnoreCase));
-                
+            return obj is RouteViewModel route && (route.From.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
+                || route.To.Contains(FilterText, StringComparison.OrdinalIgnoreCase));
         }
     }
 
@@ -69,34 +67,29 @@ public partial class CrewMembersPanelViewModel : BaseViewModel,
         var dbContext = scope.ServiceProvider.GetRequiredService<DiplomDbContext>();
 
         var vms = dbContext
-            .CrewMembers
-            .OrderBy(e => e.FullName)
+            .Routes
+            .OrderBy(e => e.From)
             .Select(e => e.ToViewModel())
             .ToList();
 
-        foreach (var item in Enum.GetValues<CrewMemberType>().Select(e => e.ToEnumValue()))
-        {
-            Types.Add(item);
-        }
-
         foreach (var item in vms)
         {
-            CrewMembers.Add(item);
+            Routes.Add(item);
         }
     }
 
     [RelayCommand]
-    private static void AddCrewMember()
+    private static void AddRoute()
     {
         using var scope = App.Services.CreateScope();
         var dialogService = scope.ServiceProvider.GetRequiredService<IUserDialogService>();
-        dialogService.ShowDialog<CrewMemberAddWindow>();
+        dialogService.ShowDialog<RouteAddWindow>();
     }
 
-    [RelayCommand(CanExecute = nameof(CanDelete))]
-    private async Task DeleteCrewMember()
+    [RelayCommand(CanExecute = nameof(CanDeleteOrRollbackChangesOrUpdate))]
+    private async Task DeleteRoute()
     {
-        if (DeleteCrewMemberCommand.IsRunning)
+        if (DeleteRouteCommand.IsRunning)
         {
             return;
         }
@@ -109,50 +102,55 @@ public partial class CrewMembersPanelViewModel : BaseViewModel,
 
         using var scope = App.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<DiplomDbContext>();
-        var item = await dbContext.CrewMembers.FirstOrDefaultAsync(e => e.Id == SelectedCrewMember!.Id);
+        var item = await dbContext.Routes.FirstOrDefaultAsync(e => e.Id == SelectedRoute!.Id);
         if (item is not null)
         {
-            if (await dbContext.CrewMemberFlights.AnyAsync(e => e.CrewMemberId == SelectedCrewMember!.Id))
+            if (await dbContext.Flights.AnyAsync(e => e.RouteId == item.Id))
             {
                 MessageBoxHelper.ShowErrorBox("Удаление невозможно, присутствуют связанные данные.");
                 return;
             }
 
-            CrewMembers.Remove(SelectedCrewMember!);
-            dbContext.CrewMembers.Remove(item);
+            Routes.Remove(SelectedRoute!);
+            dbContext.Routes.Remove(item);
             await dbContext.SaveChangesAsync();
         }
     }
 
-    private bool CanDelete() => SelectedCrewMember is not null;
+    private bool CanDeleteOrRollbackChangesOrUpdate() => SelectedRoute is not null;
 
-    [RelayCommand]
-    private static void RollbackChanges(CrewMemberViewModel crewMemberViewModel)
+    [RelayCommand(CanExecute = nameof(CanDeleteOrRollbackChangesOrUpdate))]
+    private void RollbackChanges()
     {
-        if (!crewMemberViewModel.IsModified())
+        if (!SelectedRoute!.IsModified())
+        {
+            return;
+        }
+        SelectedRoute.RollBackChanges();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDeleteOrRollbackChangesOrUpdate))]
+    private async Task UpdateRoute()
+    {
+        if (UpdateRouteCommand.IsRunning)
         {
             return;
         }
 
-        crewMemberViewModel.RollBackChanges();
-    }
-
-    [RelayCommand]
-    private async Task UpdateCrewMember(CrewMemberViewModel crewMemberViewModel)
-    {
-        if (UpdateCrewMemberCommand.IsRunning || !crewMemberViewModel!.IsModified())
+        if (!SelectedRoute!.IsModified())
         {
             return;
         }
 
         using var scope = App.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<DiplomDbContext>();
-        var crewMember = dbContext.CrewMembers.First(e => e.Id == crewMemberViewModel.Id);
+        var route = dbContext.Routes.First(e => e.Id == SelectedRoute!.Id);
 
-        crewMember.FullName = crewMemberViewModel.FullName.Trim();
-        crewMember.Type = Enum.Parse<CrewMemberType>(crewMemberViewModel.Type.Value.ToString());
+        route.From = SelectedRoute.From.Trim();
+        route.To = SelectedRoute.To.Trim();
+        route.Range = SelectedRoute.Range;
 
-        var validationResult = Validate(crewMember);
+        var validationResult = Validate(route);
         if (!validationResult.IsValid)
         {
             MessageBoxHelper.ShowErrorBox(validationResult.ToDisplayRow());
@@ -160,13 +158,15 @@ public partial class CrewMembersPanelViewModel : BaseViewModel,
         }
 
         await dbContext.SaveChangesAsync();
-        crewMemberViewModel.SaveState();
+        SelectedRoute.SaveState();
 
         MessageBoxHelper.ShowInfoBox("Данные успешно обновлены.");
     }
 
-    public void Receive(CrewMemberAddedMessage message)
+    public void Receive(RouteAddedMessage message)
     {
-        CrewMembers.Add(message.ViewModel);
+        Routes.Add(message.ViewModel);
     }
 }
+
+public record RouteAddedMessage(RouteViewModel ViewModel);
